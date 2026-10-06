@@ -1,19 +1,83 @@
 import random
 import tkinter
-def next_turn():
-    pass
-def check_winner():
-    pass
+from tkinter import messagebox
+
+def next_turn(row, col):
+    global current_player, game_active
+
+    if not game_active:
+        return
+
+    if button[row][col]["text"] == "":
+        button[row][col]["text"] = current_player
+        button[row][col]["state"] = "disabled"
+
+        if check_winner(current_player):
+            messagebox.showinfo("Winner", f"Player {current_player} wins!")
+            game_active = False
+            return
+
+        if check_spaces():
+            messagebox.showinfo("Draw", "No more spaces left. It's a draw!")
+            game_active = False
+            return
+
+        current_player = "O" if current_player == "X" else "X"
+        window.title(f"tictactoe door dylan  - {current_player}'s turn")
+
+def check_winner(player):
+    for row in range(3):
+        if all(button[row][col]["text"] == player for col in range(3)):
+            return True
+
+    for col in range(3):
+        if all(button[row][col]["text"] == player for row in range(3)):
+            return True
+
+    if all(button[i][i]["text"] == player for i in range(3)):
+        return True
+
+    if all(button[i][2 - i]["text"] == player for i in range(3)):
+        return True
+
+    return False
+
 def check_spaces():
-    pass
+    for row in range(3):
+        for col in range(3):
+            if button[row][col]["text"] == "":
+                return False
+    return True
+
 def check_game():
-    pass
-window= tkinter()
-window.title("tictactoe door dylan en ruben")
-players = ["R", "D"]
-players = random.choice(players)
-button = [[0,0,0],
-          [0,0,0],
-          [0,0,0]]
+    if check_winner("X") or check_winner("O"):
+        return True
+    if check_spaces():
+        return True
+
+    return False
+
+
+window = tkinter.Tk()
+window.title("tictactoe door dylan ")
+
+players = ["X", "O"]
+current_player = random.choice(players)
+game_active = True
+button = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+for row in range(3):
+    for col in range(3):
+        button[row][col] = tkinter.Button(
+            window,
+            text="",
+            width=8,
+            height=3,
+            command=lambda r=row, c=col: next_turn(r, c),
+            font=("Arial", 20, "bold")
+        )
+        button[row][col].grid(row=row, column=col, padx=5, pady=5)
+
+window.title(f"tictactoe door dylan  - {current_player}'s turn")
 window.mainloop()
            
